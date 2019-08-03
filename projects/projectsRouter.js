@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
 });
 
 //get projects by id
-router.get('/:id', (req, res) => {
+router.get('/:id', validateProjectID, (req, res) => {
   const id = req.params.id;
   db.get(id)
     .then(project => {
@@ -42,7 +42,7 @@ router.post('/', (req, res) => {
 });
 
 //update projects by id
-router.put('/:id', (req, res) => {
+router.put('/:id', validateProjectID, (req, res) => {
   const id = req.params.id;
   const changes = req.body;
   db.update(id, changes)
@@ -55,7 +55,7 @@ router.put('/:id', (req, res) => {
 });
 
 //delete projects by id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateProjectID, (req, res) => {
   const id = req.params.id;
   db.remove(id)
     .then(project => {
@@ -67,7 +67,7 @@ router.delete('/:id', (req, res) => {
 });
 
 //Get actions
-router.get('/:id/actions', (req, res) => {
+router.get('/:id/actions', validateProjectID, (req, res) => {
   const id = req.params.id;
   db.getProjectActions(id)
     .then(project => {
@@ -79,5 +79,20 @@ router.get('/:id/actions', (req, res) => {
 });
 
 //Middleware section <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Validate user id
+async function validateProjectID(req, res, next) {
+  const { id } = req.params;
+  const user = await db.get(id);
+  try {
+    if (!user) {
+      res.status(400).json({ message: 'invalid user id' });
+    } else {
+      next();
+    }
+  } catch (error) {
+    res.status(500).json({ err });
+  }
+}
 
 module.exports = router;
