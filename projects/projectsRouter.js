@@ -66,4 +66,18 @@ router.delete('/:id', (req, res) => {
     });
 });
 
+//Get actions
+router.get('/:id/actions', (req, res) => {
+  const id = req.params.id;
+  db.getProjectActions(id)
+    .then(project => {
+      res.status(200).json({ project });
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
+});
+
+//Middleware section <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 module.exports = router;
