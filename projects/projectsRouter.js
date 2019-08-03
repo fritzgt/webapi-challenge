@@ -29,4 +29,16 @@ router.get('/:id', (req, res) => {
     });
 });
 
+//post projects  / create new
+router.post('/', (req, res) => {
+  const newProject = req.body;
+  db.insert(newProject)
+    .then(project => {
+      res.status(200).json({ project });
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
+});
+
 module.exports = router;
