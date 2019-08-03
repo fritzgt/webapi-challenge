@@ -30,7 +30,7 @@ router.get('/:id', validateProjectID, (req, res) => {
 });
 
 //post projects  / create new
-router.post('/', (req, res) => {
+router.post('/', validateProject, (req, res) => {
   const newProject = req.body;
   db.insert(newProject)
     .then(project => {
@@ -83,10 +83,26 @@ router.get('/:id/actions', validateProjectID, (req, res) => {
 //Validate user id
 async function validateProjectID(req, res, next) {
   const { id } = req.params;
-  const user = await db.get(id);
+  const project = await db.get(id);
   try {
-    if (!user) {
+    if (!project) {
       res.status(400).json({ message: 'invalid user id' });
+    } else {
+      next();
+    }
+  } catch (error) {
+    res.status(500).json({ err });
+  }
+}
+
+//Validate user
+async function validateProject(req, res, next) {
+  const { name, description } = req.body;
+  try {
+    if (!name) {
+      res.status(400).json({ message: 'Missing project name' });
+    } else if (!description) {
+      res.status(400).json({ message: 'Missing project Description' });
     } else {
       next();
     }
